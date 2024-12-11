@@ -1,5 +1,7 @@
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
+from coordTransform_utils import wgs84_to_gcj02, gcj02_to_wgs84
+
 
 def get_exif_data(image_path):
     with Image.open(image_path) as img:
@@ -7,6 +9,7 @@ def get_exif_data(image_path):
             exif_data = img._getexif()
             if exif_data:
                 return {TAGS.get(tag): value for tag, value in exif_data.items() if tag in TAGS}
+
 
 def get_gps_info(exif_data):
     gps_info = {}
@@ -17,8 +20,17 @@ def get_gps_info(exif_data):
         return gps_info
     return None
 
+
+def get_capture_time(exif_data):
+    if exif_data:
+        capture_time = exif_data.get('DateTimeOriginal') or exif_data.get('DateTimeDigitized')
+        return capture_time
+    return None
+
+
 def convert_to_degrees(degrees, minutes, seconds):
     return degrees + (minutes / 60.0) + (seconds / 3600.0)
+
 
 def get_lat_lon(gps_info):
     lat = gps_info.get('GPSLatitude')
@@ -37,11 +49,24 @@ def get_lat_lon(gps_info):
         return latitude, longitude
     return None, None
 
+
 # image_path = 'test_data/DJI_0043.JPG'
 # image_path = 'test_data/input/0001.jpg'
 image_path = r'C:\Users\ENFI\Desktop\gopro\GPAG0489.JPG'
+# image_path = r'C:\Users\ENFI\Desktop\gopro\00000.jpg'
 exif_data = get_exif_data(image_path)
 gps_info = get_gps_info(exif_data)
-latitude, longitude = get_lat_lon(gps_info)
+capture_time = get_capture_time(exif_data)
+print("拍摄时间：", capture_time)
 
-print(f'Latitude: {latitude}, Longitude: {longitude}')
+# 如果gps存在的话
+if gps_info:
+    latitude, longitude = get_lat_lon(gps_info)
+    print(f'WGS84:Latitude: {latitude}, Longitude: {longitude}')
+    print(f'{longitude}, {latitude}')
+
+    # 从gps映射到高德地图
+    longitude, latitude = wgs84_to_gcj02(longitude, latitude)
+
+    print(f'高德:Latitude: {latitude}, Longitude: {longitude}')
+    print(f'{longitude}, {latitude}')
