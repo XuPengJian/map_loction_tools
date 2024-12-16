@@ -50,23 +50,26 @@ def get_lat_lon(gps_info):
     return None, None
 
 
-# image_path = 'test_data/DJI_0043.JPG'
-# image_path = 'test_data/input/0001.jpg'
-image_path = r'C:\Users\ENFI\Desktop\gopro\GPAG0489.JPG'
-# image_path = r'C:\Users\ENFI\Desktop\gopro\00000.jpg'
-exif_data = get_exif_data(image_path)
-gps_info = get_gps_info(exif_data)
-capture_time = get_capture_time(exif_data)
-print("拍摄时间：", capture_time)
+if __name__ == '__main__':
 
-# 如果gps存在的话
-if gps_info:
-    latitude, longitude = get_lat_lon(gps_info)
-    print(f'WGS84:Latitude: {latitude}, Longitude: {longitude}')
-    print(f'{longitude}, {latitude}')
+    # image_path = 'test_data/DJI_0043.JPG'
+    # image_path = 'test_data/input/0001.jpg'
+    # image_path = r'C:\Users\ENFI\Desktop\gopro\GPAG0489.JPG'
+    image_path = r'F:\项目\裂缝监测\【训练资料】\井盖测试数据\images\00002.jpg'
+    # image_path = r'C:\Users\ENFI\Desktop\gopro\00000.jpg'
+    exif_data = get_exif_data(image_path)
+    gps_info = get_gps_info(exif_data)
+    capture_time = get_capture_time(exif_data)
+    print("拍摄时间：", capture_time)
 
-    # 从gps映射到高德地图
-    longitude, latitude = wgs84_to_gcj02(longitude, latitude)
+    # 如果gps存在的话
+    if gps_info:
+        latitude, longitude = get_lat_lon(gps_info)
+        print(f'WGS84:Latitude: {latitude}, Longitude: {longitude}')
+        print(f'{longitude}, {latitude}')
 
-    print(f'高德:Latitude: {latitude}, Longitude: {longitude}')
-    print(f'{longitude}, {latitude}')
+        # 从gps映射到高德地图
+        longitude, latitude = wgs84_to_gcj02(longitude, latitude)
+
+        print(f'高德:Latitude: {latitude}, Longitude: {longitude}')
+        print(f'{longitude}, {latitude}')
